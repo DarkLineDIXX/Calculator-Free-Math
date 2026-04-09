@@ -87,15 +87,35 @@ impl Localization {
 fn load_font() -> Option<Vec<u8>> {
     #[cfg(target_os = "windows")]
     {
-        if let Ok(data) = std::fs::read(r"C:\Windows\Fonts\msyh.ttc") {
-            return Some(data);
-        }
-        if let Ok(data) = std::fs::read(r"C:\Windows\Fonts\arialuni.ttf") {
-            return Some(data);
+        let windows_fonts = [
+            r"C:\Windows\Fonts\msyh.ttc",
+            r"C:\Windows\Fonts\arialuni.ttf",
+        ];
+        for path in windows_fonts {
+            if let Ok(data) = std::fs::read(path) {
+                return Some(data);
+            }
         }
     }
 
-    // For other platforms, no font loading for now
+    #[cfg(target_os = "linux")]
+    {
+        let linux_fonts = [
+            "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+            "/usr/share/fonts/truetype/noto/NotoSansCJKsc-Regular.otf",
+            "/usr/share/fonts/truetype/noto/NotoSansDevanagari-Regular.ttf",
+            "/usr/share/fonts/truetype/noto/NotoSansArabic-Regular.ttf",
+            "/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+        ];
+        for path in linux_fonts {
+            if let Ok(data) = std::fs::read(path) {
+                return Some(data);
+            }
+        }
+    }
+
     None
 }
 
