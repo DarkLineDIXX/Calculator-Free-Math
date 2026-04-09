@@ -1,0 +1,10 @@
+[package]
+name = "calculator_pro"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+egui = "0.28"
+eframe = "0.28"
+chrono = "0.4"
+sys-locale = "0.3"
