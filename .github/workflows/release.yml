@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*' # Сработает, когда ты создашь тег, например v1.0.0
+      - 'v*'
 
 jobs:
   build:
@@ -12,13 +12,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        include:
-          - os: ubuntu-latest
-            artifact_name: calculator-free-math-linux
-            asset_name: calculator-free-math-linux
-          - os: windows-latest
-            artifact_name: calculator-free-math.exe
-            asset_name: calculator-free-math-windows.exe
 
     steps:
       - uses: actions/checkout@v4
@@ -27,23 +20,28 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwayland-dev libxkbcommon-dev
+          sudo apt-get install -y libgtk-3-dev libwayland-dev libxkbcommon-dev libssl-dev
 
       - name: Build
         run: cargo build --release
 
-      - name: Rename and Prepare (Windows)
+      - name: Prepare Artifacts (Windows)
         if: matrix.os == 'windows-latest'
-        run: mv target/release/calculator_pro.exe ${{ matrix.asset_name }}
+        shell: pwsh
+        run: |
+          Move-Item target/release/calculator_pro.exe calculator-windows.exe
 
-      - name: Rename and Prepare (Linux)
+      - name: Prepare Artifacts (Linux)
         if: matrix.os == 'ubuntu-latest'
-        run: mv target/release/calculator_pro ${{ matrix.asset_name }}
+        shell: bash
+        run: |
+          mv target/release/calculator_pro calculator-linux
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ matrix.asset_name }}
-          asset_name: ${{ matrix.asset_name }}
+          file: ${{ matrix.os == 'windows-latest' && 'calculator-windows.exe' || 'calculator-linux' }}
+          asset_name: ${{ matrix.os == 'windows-latest' && 'calculator-windows.exe' || 'calculator-linux' }}
           tag: ${{ github.ref }}
+          overwrite: true
