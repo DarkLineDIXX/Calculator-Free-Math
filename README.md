@@ -1,4 +1,4 @@
-# 🧮 Calculator Pro (Multi-language)
+# 🧮 Calculator Free Math (Multi-language)
 
 Современный инженерный калькулятор, написанный на **Rust** с использованием графической библиотеки **egui**. Быстрый, легкий и работает сразу на Windows и Linux.
 
